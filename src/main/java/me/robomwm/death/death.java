@@ -1,22 +1,29 @@
 package me.robomwm.death;
 
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Collections;
 
 public class death extends JavaPlugin
 {
     @Override
     public void onEnable()
     {
-        try {
-            hackWorld(Bukkit.getWorld("world"));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        getConfig().addDefault("enabledWorlds", Collections.singletonList("world"));
+        getConfig().options().copyDefaults(true);
+        saveConfig();
+
+        for (String world : getConfig().getStringList("enabledWorlds"))
+        {
+            try {
+                hackWorld(getServer().getWorld(world));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
     private void hackWorld(World bukkitWorld) throws Exception {

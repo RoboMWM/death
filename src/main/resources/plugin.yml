@@ -1,4 +1,6 @@
-name: ohno
+name: Hack_Da_Planet
 version: 1.0
-author: triangle36
+authors: [RoboMWM,DemonWav,triangle36]
 main: me.robomwm.death.death
+api-version: 1.13
+website: http://robomwm.com
