@@ -13,14 +13,17 @@ public class death extends JavaPlugin
     @Override
     public void onEnable()
     {
-        getConfig().addDefault("enabledWorlds", Collections.singletonList("world"));
+        getConfig().addDefault("hak", Collections.singletonList("world"));
         getConfig().options().copyDefaults(true);
         saveConfig();
 
-        for (String world : getConfig().getStringList("enabledWorlds"))
+        for (String world : getConfig().getStringList("hak"))
         {
+            World w = getServer().getWorld(world);
+            if (w == null)
+                continue;
             try {
-                hackWorld(getServer().getWorld(world));
+                hackWorld(w);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
