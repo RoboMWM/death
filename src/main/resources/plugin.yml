@@ -3,5 +3,6 @@ version: '1.0'
 authors: [RoboMWM,DemonWav,triangle36]
 main: me.robomwm.death.death
 website: http://robomwm.com
+api-version: '1.13' # Works fine with anything tho
 softdepend:
   - Multiverse-Core
