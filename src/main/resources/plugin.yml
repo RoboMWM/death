@@ -3,3 +3,5 @@ version: '1.0'
 authors: [RoboMWM,DemonWav,triangle36]
 main: me.robomwm.death.death
 website: http://robomwm.com
+softdepend:
+  - Multiverse-Core
