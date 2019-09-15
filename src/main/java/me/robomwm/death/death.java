@@ -29,18 +29,34 @@ public class death extends JavaPlugin
             }
         }
     }
-    private void hackWorld(World bukkitWorld) throws Exception {
+
+    private void hackWorld(World bukkitWorld) throws Exception
+    {
         final Class<? extends World> bukkitWorldClass = bukkitWorld.getClass();
         final Method getHandle = bukkitWorldClass.getMethod("getHandle");
         final Object handle = getHandle.invoke(bukkitWorld);
 
-        Field f = handle.getClass().getField("isClientSide");
+        Field f = findField("isClientSide", handle); //handle.getClass().getField("isClientSide");
 
         Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);
         modifiersField.setInt(f, f.getModifiers() & ~Modifier.FINAL);
 
         f.set(handle, Boolean.TRUE);
+    }
+
+    private Field findField(String field, Object handle)
+    {
+        if (handle == null)
+            return null;
+        try
+        {
+            return handle.getClass().getDeclaredField(field);
+        }
+        catch (NoSuchFieldException e)
+        {
+            return findField(field, handle.getClass().getSuperclass());
+        }
     }
 
 }
