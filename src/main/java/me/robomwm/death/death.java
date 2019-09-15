@@ -1,15 +1,30 @@
 package me.robomwm.death;
 
-import org.bukkit.World;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Collections;
+import org.bukkit.World;
+import org.bukkit.plugin.java.JavaPlugin;
+import sun.misc.Unsafe;
 
-public class death extends JavaPlugin
+public final class death extends JavaPlugin
 {
+    private static final Unsafe unsafe;
+
+    static {
+        try
+        {
+            final Class<Unsafe> clazz = Unsafe.class;
+            final Field unsafeField = clazz.getDeclaredField("theUnsafe");
+            unsafeField.setAccessible(true);
+            unsafe = (Unsafe) unsafeField.get(null);
+        }
+        catch (final Throwable t)
+        {
+            throw new InternalError(t);
+        }
+    }
+
     @Override
     public void onEnable()
     {
@@ -17,46 +32,44 @@ public class death extends JavaPlugin
         getConfig().options().copyDefaults(true);
         saveConfig();
 
-        for (String world : getConfig().getStringList("hak"))
+        for (final String world : getConfig().getStringList("hak"))
         {
-            World w = getServer().getWorld(world);
+            final World w = getServer().getWorld(world);
             if (w == null)
                 continue;
-            try {
+            try
+            {
                 hackWorld(w);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            }
+            catch (final Throwable e)
+            {
+                unsafe.throwException(e);
             }
         }
     }
 
-    private void hackWorld(World bukkitWorld) throws Exception
+    private void hackWorld(final World bukkitWorld) throws Throwable
     {
         final Class<? extends World> bukkitWorldClass = bukkitWorld.getClass();
         final Method getHandle = bukkitWorldClass.getMethod("getHandle");
+        getHandle.setAccessible(true); // just in case
         final Object handle = getHandle.invoke(bukkitWorld);
 
-        Field f = findField("isClientSide", handle); //handle.getClass().getField("isClientSide");
-
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(f, f.getModifiers() & ~Modifier.FINAL);
-
-        f.set(handle, Boolean.TRUE);
+        final Field f = findField("isClientSide", handle.getClass());
+        unsafe.putBoolean(handle, unsafe.objectFieldOffset(f), true);
     }
 
-    private Field findField(String field, Object handle)
+    private Field findField(final String field, final Class<?> handle)
     {
         if (handle == null)
             return null;
         try
         {
-            return handle.getClass().getDeclaredField(field);
+            return handle.getDeclaredField(field);
         }
-        catch (NoSuchFieldException e)
+        catch (final NoSuchFieldException e)
         {
-            return findField(field, handle.getClass().getSuperclass());
+            return findField(field, handle.getSuperclass());
         }
     }
-
 }
