@@ -34,7 +34,7 @@ public class death extends JavaPlugin
         final Method getHandle = bukkitWorldClass.getMethod("getHandle");
         final Object handle = getHandle.invoke(bukkitWorld);
 
-        Field f = handle.getClass().getDeclaredField("isClientSide");
+        Field f = handle.getClass().getField("isClientSide");
 
         Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);
