@@ -31,5 +31,4 @@ cache:
   - C:\maven\
   - C:\Users\appveyor\.m2
 artifacts:
-  - path: target/{APPVEYOR_PROJECT_NAME}.jar
-    name: '{APPVEYOR_PROJECT_NAME}'
+  - path: target/$(APPVEYOR_PROJECT_NAME).jar
